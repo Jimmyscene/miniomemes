@@ -1,0 +1,37 @@
+version: '2.1'
+
+services:
+  goapp:
+    build:
+      context: goapp
+
+  pyapp:
+    build:
+      context: pyapp
+      dockerfile: Dockerfile
+
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: accesskey
+      MINIO_SECRET_KEY: secretkey
+    command: server /export
+    volumes:
+      - minio_data:/export
+
+  nginx:
+    build: ./nginx/
+    restart: always
+    ports:
+    - 8080:80
+
+  ui:
+    build:
+      context: ui
+    volumes:
+      - ./ui:/usr/src/app
+
+volumes:
+  minio_data:
